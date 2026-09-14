@@ -273,6 +273,22 @@ textarea {
 
     </style>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL = "https://nixxogqxndsigoaizqbp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_fDx1YZ6FaubUnUEnaEfpbQ_4GqZVHFW";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+</script>
+
+
 </head>
 
 <body>
@@ -752,16 +768,16 @@ textarea {
        MANUTENÇÃO
     ========================= */
 
- function abrirManutencao() {
+ async function abrirManutencao() {
 
     document.getElementById("telaInicial").style.display = "none";
     document.getElementById("telaMotor").style.display = "none";
     document.getElementById("telaPainel").style.display = "none";
     document.getElementById("telaManutencao").style.display = "block";
 
-    atualizarUltimaManutencao();
-
     document.getElementById("areaHistorico").style.display = "none";
+
+    await atualizarUltimaManutencao();
 
 }
 
@@ -772,7 +788,7 @@ function registrarManutencao() {
 
 }
 
-function salvarManutencao() {
+async function salvarManutencao() {
 
     const data = document.getElementById("dataManutencao").value;
     const tipo = document.getElementById("tipoManutencao").value;
@@ -782,57 +798,85 @@ function salvarManutencao() {
     const observacoes = document.getElementById("observacoesManutencao").value;
 
     if (!data || !servico || !responsavel) {
+
         alert("Preencha a data, o serviço realizado e o responsável.");
+
         return;
+
     }
 
-    const manutencao = {
-        data: data,
-        tipo: tipo,
-        servico: servico,
-        pecas: pecas,
-        responsavel: responsavel,
-        observacoes: observacoes
-    };
+    const { error } = await supabaseClient
+        .from("manutencoes")
+        .insert([
+            {
+                data: data,
+                tipo: tipo,
+                servico: servico,
+                pecas: pecas,
+                responsavel: responsavel,
+                observacoes: observacoes
+            }
+        ]);
 
-    let historico = JSON.parse(
-        localStorage.getItem("historicoManutencao")
-    ) || [];
+    if (error) {
 
-    historico.push(manutencao);
+        console.error(error);
 
-    localStorage.setItem(
-        "historicoManutencao",
-        JSON.stringify(historico)
-    );
+        alert("Erro ao salvar a manutenção.");
+
+        return;
+
+    }
 
     alert("Manutenção salva com sucesso!");
 
     document.getElementById("formularioManutencao").style.display = "none";
 
-    mostrarHistorico();
-atualizarUltimaManutencao();
+    document.getElementById("dataManutencao").value = "";
+    document.getElementById("servicoManutencao").value = "";
+    document.getElementById("pecasManutencao").value = "";
+    document.getElementById("responsavelManutencao").value = "";
+    document.getElementById("observacoesManutencao").value = "";
+
+    await atualizarUltimaManutencao();
+    await mostrarHistorico();
 
 }
 
-function atualizarUltimaManutencao() {
+async function atualizarUltimaManutencao() {
 
-    let historico = JSON.parse(
-        localStorage.getItem("historicoManutencao")
-    ) || [];
+    const { data: historico, error } = await supabaseClient
+        .from("manutencoes")
+        .select("*")
+        .order("data", { ascending: false })
+        .order("criado_em", { ascending: false })
+        .limit(1);
 
-    if (historico.length === 0) {
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+    if (!historico || historico.length === 0) {
         return;
     }
 
-    const ultima = historico[historico.length - 1];
+    const ultima = historico[0];
 
-    // Converte a data para DD/MM/AAAA
     let dataFormatada = ultima.data;
 
     if (ultima.data) {
+
         const partes = ultima.data.split("-");
-        dataFormatada = partes[2] + "/" + partes[1] + "/" + partes[0];
+
+        dataFormatada =
+            partes[2] + "/" +
+            partes[1] + "/" +
+            partes[0];
+
     }
 
     document.getElementById("ultimaData").textContent =
@@ -849,9 +893,10 @@ function atualizarUltimaManutencao() {
 
     document.getElementById("ultimoStatus").textContent =
         "Concluída";
+
 }
 
-function mostrarHistorico() {
+async function mostrarHistorico() {
 
     const lista = document.getElementById("listaHistorico");
 
@@ -859,13 +904,29 @@ function mostrarHistorico() {
         return;
     }
 
-    let historico = JSON.parse(
-        localStorage.getItem("historicoManutencao")
-    ) || [];
+    const { data: historico, error } = await supabaseClient
+        .from("manutencoes")
+        .select("*")
+        .order("data", { ascending: false })
+        .order("criado_em", { ascending: false });
+
+    if (error) {
+
+        console.error(error);
+
+        lista.innerHTML = `
+            <p style="color:#b91c1c; font-size:14px;">
+                Erro ao carregar o histórico.
+            </p>
+        `;
+
+        return;
+
+    }
 
     lista.innerHTML = "";
 
-    if (historico.length === 0) {
+    if (!historico || historico.length === 0) {
 
         lista.innerHTML = `
             <p style="color:#64748b; font-size:14px;">
@@ -874,9 +935,23 @@ function mostrarHistorico() {
         `;
 
         return;
+
     }
 
-    historico.reverse().forEach(function(item) {
+    historico.forEach(function(item) {
+
+        let dataFormatada = item.data;
+
+        if (item.data) {
+
+            const partes = item.data.split("-");
+
+            dataFormatada =
+                partes[2] + "/" +
+                partes[1] + "/" +
+                partes[0];
+
+        }
 
         lista.innerHTML += `
 
@@ -886,16 +961,12 @@ function mostrarHistorico() {
 
                 <div class="linha">
                     <span>Data</span>
-                    <span class="valor">
-                        ${item.data}
-                    </span>
+                    <span class="valor">${dataFormatada}</span>
                 </div>
 
                 <div class="linha">
                     <span>Serviço</span>
-                    <span class="valor">
-                        ${item.servico}
-                    </span>
+                    <span class="valor">${item.servico}</span>
                 </div>
 
                 <div class="linha">
@@ -907,9 +978,7 @@ function mostrarHistorico() {
 
                 <div class="linha">
                     <span>Responsável</span>
-                    <span class="valor">
-                        ${item.responsavel}
-                    </span>
+                    <span class="valor">${item.responsavel}</span>
                 </div>
 
                 <div style="margin-top:12px; font-size:13px; color:#64748b;">
