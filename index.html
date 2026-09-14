@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>COMP-001 | Compressor</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f2f4f7;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: auto;
+            min-height: 100vh;
+            background: white;
+        }
+
+        /* =========================
+           TELA INICIAL
+        ========================= */
+
+        header {
+            background: #17212b;
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        header .codigo {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 6px;
+        }
+
+        header h1 {
+            font-size: 25px;
+        }
+
+        header p {
+            margin-top: 6px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .motor-area {
+            padding: 25px 20px 10px;
+            text-align: center;
+        }
+
+        .motor-imagem {
+            height: 230px;
+            border-radius: 15px;
+            background: #e9edf1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 1px solid #d5dbe1;
+        }
+
+        .motor-placeholder {
+            font-size: 85px;
+        }
+
+        .motor-area h2 {
+            font-size: 21px;
+            margin-bottom: 5px;
+        }
+
+        .motor-area p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .identificacao {
+            margin: 20px;
+            padding: 18px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .identificacao h3 {
+            font-size: 15px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        .linha {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        .linha:last-child {
+            border-bottom: none;
+        }
+
+        .valor {
+            font-weight: bold;
+        }
+
+        .menu {
+            padding: 5px 20px 30px;
+        }
+
+        .botao {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+            background: #eef2f6;
+            color: #17212b;
+            transition: 0.2s;
+        }
+
+        .botao:hover {
+            transform: translateY(-2px);
+        }
+
+        .icone {
+            font-size: 23px;
+            margin-right: 12px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        /* =========================
+           BARRA DE NAVEGAÇÃO
+        ========================= */
+
+        .barra-navegacao {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #17212b;
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .barra-navegacao button {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 25px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .barra-navegacao strong {
+            font-size: 16px;
+        }
+
+        /* =========================
+           TELA DO MOTOR
+        ========================= */
+
+        #telaMotor {
+            min-height: 100vh;
+            background: white;
+        }
+
+        .titulo-tela {
+            padding: 20px 20px 5px;
+        }
+
+        .titulo-tela h2 {
+            font-size: 22px;
+        }
+
+        /* =========================
+           TELA DO PAINEL
+        ========================= */
+
+        #telaPainel {
+            min-height: 100vh;
+            background: white;
+        }
+
+        .painel-conteudo {
+            padding: 20px;
+        }
+
+        .painel-conteudo h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .painel-descricao {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .diagrama-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .diagrama-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .aviso {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         TELA INICIAL
+    ========================= -->
+
+    <div id="telaInicial">
+
+        <header>
+
+            <div class="codigo">
+                IDENTIFICAÇÃO DO EQUIPAMENTO
+            </div>
+
+            <h1>
+                COMPRESSOR 001
+            </h1>
+
+            <p>
+                Motor elétrico trifásico
+            </p>
+
+        </header>
+
+
+        <section class="motor-area">
+
+            <div class="motor-imagem">
+
+                <div class="motor-placeholder">
+                    ⚙️
+                </div>
+
+            </div>
+
+            <h2>
+                Motor Trifásico
+            </h2>
+
+            <p>
+                Motor de acionamento do compressor
+            </p>
+
+        </section>
+
+
+        <section class="identificacao">
+
+            <h3>
+                Identificação
+            </h3>
+
+            <div class="linha">
+                <span>Fabricante</span>
+                <span class="valor">WEG</span>
+            </div>
+
+            <div class="linha">
+                <span>Modelo</span>
+                <span class="valor">W22</span>
+            </div>
+
+            <div class="linha">
+                <span>Potência</span>
+                <span class="valor">15 CV</span>
+            </div>
+
+            <div class="linha">
+                <span>Tensão</span>
+                <span class="valor">220/380 V</span>
+            </div>
+
+            <div class="linha">
+                <span>Frequência</span>
+                <span class="valor">60 Hz</span>
+            </div>
+
+        </section>
+
+
+        <section class="menu">
+
+            <button class="botao" onclick="abrirMotor()">
+
+                <span class="icone">⚙️</span>
+
+                Dados do motor
+
+            </button>
+
+
+            <button class="botao" onclick="abrirPainel()">
+
+                <span class="icone">⚡</span>
+
+                Diagrama do painel
+
+            </button>
+
+
+            <button class="botao" onclick="abrirManutencao()">
+
+                <span class="icone">🔧</span>
+
+                Manutenção e histórico
+
+            </button>
+
+            <button class="botao" onclick="abrirManual()">
+    <span class="icone">📖</span>
+    Manual do equipamento
+</button>
+
+        </section>
+
+
+        <footer>
+
+            Sistema de identificação digital • COMP-001
+
+        </footer>
+
+    </div>
+
+
+    <!-- =========================
+         TELA DADOS DO MOTOR
+    ========================= -->
+
+    <section id="telaMotor" style="display: none;">
+
+        <div class="barra-navegacao">
+
+            <button onclick="voltarInicio()">
+                ←
+            </button>
+
+            <strong>
+                COMPRESSOR 001
+            </strong>
+
+        </div>
+
+
+        <div class="titulo-tela">
+
+            <h2>
+                ⚙️ Dados do motor
+            </h2>
+
+        </div>
+
+
+        <div class="identificacao">
+
+            <h3>
+                Ficha técnica
+            </h3>
+
+            <div class="linha">
+                <span>Fabricante</span>
+                <span class="valor">WEG</span>
+            </div>
+
+            <div class="linha">
+                <span>Modelo</span>
+                <span class="valor">W22 — exemplo fictício</span>
+            </div>
+
+            <div class="linha">
+                <span>Potência</span>
+                <span class="valor">15 CV</span>
+            </div>
+
+            <div class="linha">
+                <span>Tensão</span>
+                <span class="valor">220/380 V</span>
+            </div>
+
+            <div class="linha">
+                <span>Corrente</span>
+                <span class="valor">39,2 / 22,7 A</span>
+            </div>
+
+            <div class="linha">
+                <span>Frequência</span>
+                <span class="valor">60 Hz</span>
+            </div>
+
+            <div class="linha">
+                <span>Rotação</span>
+                <span class="valor">1.765 rpm</span>
+            </div>
+
+            <div class="linha">
+                <span>Fases</span>
+                <span class="valor">3</span>
+            </div>
+
+            <div class="linha">
+                <span>Ligação</span>
+                <span class="valor">Δ / Y</span>
+            </div>
+
+            <div class="linha">
+                <span>Grau de proteção</span>
+                <span class="valor">IP55</span>
+            </div>
+
+            <div class="linha">
+                <span>Classe de isolamento</span>
+                <span class="valor">F</span>
+            </div>
+
+            <div class="linha">
+                <span>Fator de potência</span>
+                <span class="valor">0,86</span>
+            </div>
+
+            <div class="linha">
+                <span>Rendimento</span>
+                <span class="valor">91,5%</span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         TELA DIAGRAMA DO PAINEL
+    ========================= -->
+
+    <section id="telaPainel" style="display: none;">
+
+        <div class="barra-navegacao">
+
+            <button onclick="voltarInicio()">
+                ←
+            </button>
+
+            <strong>
+                COMPRESSOR 001
+            </strong>
+
+        </div>
+
+
+        <div class="painel-conteudo">
+
+            <h2>
+                ⚡ Diagrama do painel
+            </h2>
+
+            <p class="painel-descricao">
+                Diagrama elétrico do sistema de acionamento.
+            </p>
+
+
+            <div class="diagrama-box">
+
+                <img
+                    src="diagrama-painel.png"
+                    alt="Diagrama elétrico do painel do compressor"
+                >
+
+            </div>
+
+
+            <div class="aviso">
+
+                ⚠️ <strong>Atenção:</strong>
+                este diagrama foi inserido para fins de identificação
+                e consulta visual. Antes de qualquer intervenção,
+                utilize o esquema elétrico oficial do equipamento
+                e siga os procedimentos de segurança aplicáveis.
+
+            </div>
+
+        </div>
+
+    </section>
+
+<!-- =========================
+     TELA MANUTENÇÃO
+========================= -->
+
+<section id="telaManutencao" style="display: none;">
+
+    <div class="barra-navegacao">
+
+        <button onclick="voltarInicio()">
+            ←
+        </button>
+
+        <strong>
+            COMPRESSOR 001
+        </strong>
+
+    </div>
+
+
+    <div class="painel-conteudo">
+
+        <h2>
+            🔧 Manutenção e histórico
+        </h2>
+
+        <p class="painel-descricao">
+            Registro das manutenções realizadas no equipamento.
+        </p>
+
+
+       <div class="identificacao">
+    <h3>Última manutenção</h3>
+
+    <div class="linha">
+        <span>Data</span>
+        <span class="valor" id="ultimaData">10/09/2026</span>
+    </div>
+
+    <div class="linha">
+        <span>Tipo</span>
+        <span class="valor" id="ultimoTipo">Inspeção</span>
+    </div>
+
+    <div class="linha">
+        <span>Serviço</span>
+        <span class="valor" id="ultimoServico">Inspeção geral</span>
+    </div>
+
+    <div class="linha">
+        <span>Responsável</span>
+        <span class="valor" id="ultimoResponsavel">Equipe de manutenção</span>
+    </div>
+
+    <div class="linha">
+        <span>Status</span>
+        <span class="valor" id="ultimoStatus">Concluída</span>
+    </div>
+</div>
+
+
+        <div class="identificacao">
+
+            <h3>
+                Próxima manutenção
+            </h3>
+
+            <div class="linha">
+                <span>Data prevista</span>
+                <span class="valor">10/12/2026</span>
+            </div>
+
+            <div class="linha">
+                <span>Tipo</span>
+                <span class="valor">Preventiva</span>
+            </div>
+
+        </div>
+
+
+       <button class="botao" onclick="registrarManutencao()">
+    <span class="icone">➕</span>
+    Registrar manutenção
+</button>
+
+<button class="botao" onclick="abrirHistorico()">
+    <span class="icone">📋</span>
+    Ver histórico
+</button>
+
+        <div id="areaHistorico" style="display: none; padding: 10px 0 20px;">
+
+    <h3 style="margin-bottom: 15px;">
+        📋 Histórico de manutenções
+    </h3>
+
+    <div id="listaHistorico"></div>
+
+    <button class="botao" onclick="fecharHistorico()">
+        ← Fechar histórico
+    </button>
+
+</div>
+
+        <div id="formularioManutencao" style="display: none;">
+
+    <div class="identificacao">
+
+        <h3>Nova manutenção</h3>
+
+        <label>Data</label>
+        <input type="date" id="dataManutencao">
+
+        <label>Tipo de manutenção</label>
+        <select id="tipoManutencao">
+            <option value="Preventiva">Preventiva</option>
+            <option value="Corretiva">Corretiva</option>
+            <option value="Inspeção">Inspeção</option>
+        </select>
+
+        <label>Serviço realizado</label>
+        <textarea id="servicoManutencao"
+            placeholder="Descreva o serviço realizado"></textarea>
+
+        <label>Peças trocadas</label>
+        <textarea id="pecasManutencao"
+            placeholder="Informe as peças trocadas"></textarea>
+
+        <label>Responsável</label>
+        <input type="text"
+            id="responsavelManutencao"
+            placeholder="Nome do responsável">
+
+        <label>Observações</label>
+        <textarea id="observacoesManutencao"
+            placeholder="Observações adicionais"></textarea>
+
+        <button class="botao" onclick="salvarManutencao()">
+            💾 Salvar manutenção
+        </button>
+
+        <button class="botao" onclick="fecharFormulario()">
+            ← Cancelar
+        </button>
+
+    </div>
+
+</div>
+
+
+    </div>
+
+</section>
+
+</div>
+
+
+<script>
+
+    /* =========================
+       ABRIR DADOS DO MOTOR
+    ========================= */
+
+    function abrirMotor() {
+
+        document.getElementById("telaInicial").style.display = "none";
+
+        document.getElementById("telaMotor").style.display = "block";
+
+        document.getElementById("telaPainel").style.display = "none";
+
+    }
+
+
+    /* =========================
+       ABRIR DIAGRAMA
+    ========================= */
+
+    function abrirPainel() {
+
+        document.getElementById("telaInicial").style.display = "none";
+
+        document.getElementById("telaMotor").style.display = "none";
+
+        document.getElementById("telaPainel").style.display = "block";
+
+    }
+
+
+    /* =========================
+       MANUTENÇÃO
+    ========================= */
+
+ function abrirManutencao() {
+
+    document.getElementById("telaInicial").style.display = "none";
+    document.getElementById("telaMotor").style.display = "none";
+    document.getElementById("telaPainel").style.display = "none";
+    document.getElementById("telaManutencao").style.display = "block";
+
+    atualizarUltimaManutencao();
+
+    document.getElementById("areaHistorico").style.display = "none";
+
+}
+
+
+function registrarManutencao() {
+
+    document.getElementById("formularioManutencao").style.display = "block";
+
+}
+
+function salvarManutencao() {
+
+    const data = document.getElementById("dataManutencao").value;
+    const tipo = document.getElementById("tipoManutencao").value;
+    const servico = document.getElementById("servicoManutencao").value;
+    const pecas = document.getElementById("pecasManutencao").value;
+    const responsavel = document.getElementById("responsavelManutencao").value;
+    const observacoes = document.getElementById("observacoesManutencao").value;
+
+    if (!data || !servico || !responsavel) {
+        alert("Preencha a data, o serviço realizado e o responsável.");
+        return;
+    }
+
+    const manutencao = {
+        data: data,
+        tipo: tipo,
+        servico: servico,
+        pecas: pecas,
+        responsavel: responsavel,
+        observacoes: observacoes
+    };
+
+    let historico = JSON.parse(
+        localStorage.getItem("historicoManutencao")
+    ) || [];
+
+    historico.push(manutencao);
+
+    localStorage.setItem(
+        "historicoManutencao",
+        JSON.stringify(historico)
+    );
+
+    alert("Manutenção salva com sucesso!");
+
+    document.getElementById("formularioManutencao").style.display = "none";
+
+    mostrarHistorico();
+atualizarUltimaManutencao();
+
+}
+
+function atualizarUltimaManutencao() {
+
+    let historico = JSON.parse(
+        localStorage.getItem("historicoManutencao")
+    ) || [];
+
+    if (historico.length === 0) {
+        return;
+    }
+
+    const ultima = historico[historico.length - 1];
+
+    // Converte a data para DD/MM/AAAA
+    let dataFormatada = ultima.data;
+
+    if (ultima.data) {
+        const partes = ultima.data.split("-");
+        dataFormatada = partes[2] + "/" + partes[1] + "/" + partes[0];
+    }
+
+    document.getElementById("ultimaData").textContent =
+        dataFormatada;
+
+    document.getElementById("ultimoTipo").textContent =
+        ultima.tipo;
+
+    document.getElementById("ultimoServico").textContent =
+        ultima.servico;
+
+    document.getElementById("ultimoResponsavel").textContent =
+        ultima.responsavel;
+
+    document.getElementById("ultimoStatus").textContent =
+        "Concluída";
+}
+
+function mostrarHistorico() {
+
+    const lista = document.getElementById("listaHistorico");
+
+    if (!lista) {
+        return;
+    }
+
+    let historico = JSON.parse(
+        localStorage.getItem("historicoManutencao")
+    ) || [];
+
+    lista.innerHTML = "";
+
+    if (historico.length === 0) {
+
+        lista.innerHTML = `
+            <p style="color:#64748b; font-size:14px;">
+                Nenhuma manutenção registrada.
+            </p>
+        `;
+
+        return;
+    }
+
+    historico.reverse().forEach(function(item) {
+
+        lista.innerHTML += `
+
+            <div class="identificacao">
+
+                <h3>${item.tipo}</h3>
+
+                <div class="linha">
+                    <span>Data</span>
+                    <span class="valor">
+                        ${item.data}
+                    </span>
+                </div>
+
+                <div class="linha">
+                    <span>Serviço</span>
+                    <span class="valor">
+                        ${item.servico}
+                    </span>
+                </div>
+
+                <div class="linha">
+                    <span>Peças</span>
+                    <span class="valor">
+                        ${item.pecas || "Nenhuma"}
+                    </span>
+                </div>
+
+                <div class="linha">
+                    <span>Responsável</span>
+                    <span class="valor">
+                        ${item.responsavel}
+                    </span>
+                </div>
+
+                <div style="margin-top:12px; font-size:13px; color:#64748b;">
+                    ${item.observacoes || ""}
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+function fecharFormulario() {
+
+    document.getElementById("formularioManutencao").style.display = "none";
+
+}
+
+function abrirHistorico() {
+
+    document.getElementById("areaHistorico").style.display = "block";
+
+    mostrarHistorico();
+
+}
+
+function fecharHistorico() {
+
+    document.getElementById("areaHistorico").style.display = "none";
+
+}
+
+function abrirManual() {
+
+    window.open("manual-compressor.pdf", "_blank");
+
+}
+
+    /* =========================
+       VOLTAR PARA INÍCIO
+    ========================= */
+
+    function voltarInicio() {
+
+    document.getElementById("telaInicial").style.display = "block";
+
+    document.getElementById("telaMotor").style.display = "none";
+
+    document.getElementById("telaPainel").style.display = "none";
+
+    document.getElementById("telaManutencao").style.display = "none";
+
+}
+
+</script>
+
+</body>
+
+</html>
